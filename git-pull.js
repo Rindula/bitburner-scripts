@@ -32,7 +32,7 @@ export async function main(ns) {
         const remoteFilePath = baseUrl + localFilePath;
         ns.print(`Trying to update "${localFilePath}" from ${remoteFilePath} ...`);
         if (await ns.wget(`${remoteFilePath}?ts=${new Date().getTime()}`, (options.subfolder ? (options.subfolder + '/') : '') + localFilePath))
-            ns.tprint(`SUCCESS: Updated "${localFilePath}" to the latest from ${remoteFilePath}`);
+            ns.print(`SUCCESS: Updated "${localFilePath}" to the latest from ${remoteFilePath}`);
         else
             ns.tprint(`WARNING: "${localFilePath}" was not updated. (Currently running or not located at ${remoteFilePath} )`)
     }
