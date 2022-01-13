@@ -622,10 +622,10 @@ function buildServerObject(ns, node) {
         name: node,
         requiredHackLevel: dictServerRequiredHackinglevels[node],
         portsRequired: dictServerNumPortsRequired[node],
-        getMinSecurity: () => dictServerMinSecurityLevels[node] ? ? 0, // Servers not in our dictionary were purchased, and so undefined is okay
-        getMaxMoney: () => dictServerMaxMoney[node] ? ? 0,
-        getMoneyPerRamSecond: () => dictServerProfitInfo ? dictServerProfitInfo[node] ? .gainRate ? ? 0 : (dictServerMaxMoney[node] ? ? 0),
-        getExpPerSecond: () => dictServerProfitInfo ? dictServerProfitInfo[node] ? .expRate ? ? 0 : (1 / dictServerMinSecurityLevels[node] ? ? 0),
+        getMinSecurity: () => dictServerMinSecurityLevels[node] ?? 0, // Servers not in our dictionary were purchased, and so undefined is okay
+        getMaxMoney: () => dictServerMaxMoney[node] ?? 0,
+        getMoneyPerRamSecond: () => dictServerProfitInfo ? dictServerProfitInfo[node]?.gainRate ?? 0 : (dictServerMaxMoney[node] ?? 0),
+        getExpPerSecond: () => dictServerProfitInfo ? dictServerProfitInfo[node]?.expRate ?? 0 : (1 / dictServerMinSecurityLevels[node] ?? 0),
         percentageToSteal: 1.0 / 16.0, // This will get tweaked automatically based on RAM available and the relative value of this server
         getMoney: function() { return this.ns.getServerMoneyAvailable(this.name); },
         getSecurity: function() { return this.ns.getServerSecurityLevel(this.name); },
@@ -938,7 +938,7 @@ async function performScheduling(ns, currentTarget, snapshot) {
             args.push(loopingMode ? 1 : 0); // Argument to indicate whether the cycle should loop perpetually
             if (recoveryThreadPadding > 1 && ["weak", "grow"].includes(schedItem.toolShortName))
                 schedItem.threadsNeeded *= recoveryThreadPadding; // Only need to pad grow/weaken threads
-            if (options.i && currentTerminalServer ? .name == currentTarget.name && schedItem.toolShortName == "hack")
+            if (options.i && currentTerminalServer?.name == currentTarget.name && schedItem.toolShortName == "hack")
                 schedItem.toolShortName = "manualhack";
             const result = await arbitraryExecution(ns, getTool(schedItem.toolShortName), schedItem.threadsNeeded, args)
             if (result == false) { // If execution fails, we have probably run out of ram.
@@ -1346,15 +1346,15 @@ async function scheduleHackExpCycle(ns, server, percentOfFreeRamToConsume, verbo
         let cycleTime = scheduleDelay + expTime + 10; // Wake up this long after a hack has fired (to ensure we don't wake up too early)
         nextXpCycleEnd[server.name] = now + cycleTime; // Store when this server's next cycle is expected to end
         // Schedule the FarmXP threads first, ensuring that they are not split (if they our split, our hack threads above 'effectiveHackThreads' lose their free ride)
-        let success = await arbitraryExecution(ns, expTool, threads, [server.name, scheduleTime, 0, expTime, "FarmXP"], allocatedServer ? .name);
+        let success = await arbitraryExecution(ns, expTool, threads, [server.name, scheduleTime, 0, expTime, "FarmXP"], allocatedServer?.name);
 
         if (advancedMode) { // Need to keep server money above zero, and security at minimum to farm xp from hack(); 
             const scheduleGrow = scheduleTime + cycleTime * 2 / 15 - scheduleDelay; // Time this to resolve at 1/3 * cycleTime after each hack fires
             const scheduleWeak = scheduleTime + cycleTime * 2 / 3 - scheduleDelay; //  Time this to resolve at 2/3 * cycleTime after each hack fires
-            success && = await arbitraryExecution(ns, getTool("grow"), growThreadsNeeded, [server.name, scheduleGrow, 0, server.timeToGrow(), "growForXp"],
-                singleServer ? allocatedServer ? .name : null, !singleServer);
-            success && = await arbitraryExecution(ns, getTool("weak"), weakenThreadsNeeded, [server.name, scheduleWeak, 0, server.timeToWeaken(), "weakenForXp"],
-                singleServer ? allocatedServer ? .name : null, !singleServer);
+            success &&= await arbitraryExecution(ns, getTool("grow"), growThreadsNeeded, [server.name, scheduleGrow, 0, server.timeToGrow(), "growForXp"],
+                singleServer ? allocatedServer?.name : null, !singleServer);
+            success &&= await arbitraryExecution(ns, getTool("weak"), weakenThreadsNeeded, [server.name, scheduleWeak, 0, server.timeToWeaken(), "weakenForXp"],
+                singleServer ? allocatedServer?.name : null, !singleServer);
             //log(`XP Farm ${server.name} money available is ${formatMoney(server.getMoney())} and security is ` +
             //    `${server.getSecurity().toPrecision(3)} of ${server.getMinSecurity().toPrecision(3)}`);
             //log(`Planned start: Hack: ${Math.round(scheduleTime - now)} Grow: ${Math.round(scheduleGrow - now)} ` +
