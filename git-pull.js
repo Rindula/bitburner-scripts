@@ -1,6 +1,6 @@
 let options;
 const argsSchema = [
-    ['github', 'alainbryden'],
+    ['github', 'Rindula'],
     ['repository', 'bitburner-scripts'],
     ['branch', 'main'],
     ['download', []], // By default, all supported files in the repository will be downloaded. Override with just a subset of files here
@@ -25,7 +25,7 @@ export function autocomplete(data, args) {
  * - Ensuring you have no local changes that you don't mind getting overwritten
  * TODO: Some way to list all files in the repository and/or download them all. **/
 export async function main(ns) {
-    options = ns.flags(argsSchema);    
+    options = ns.flags(argsSchema);
     if (options.subfolder && !options.subfolder.startsWith('/'))
         options.subfolder = '/' + options.subfolder; // Game requires folders to have a leading slash. Add one if it's missing.
     const baseUrl = `https://raw.githubusercontent.com/${options.github}/${options.repository}/${options.branch}/`;
