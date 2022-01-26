@@ -52,7 +52,7 @@ export let main = ns => {
     let tcommand = x => {
         tIn.value = x;
         tEv.onChange({ target: tIn });
-        tEv.onKeyDown({ keyCode: "13", preventDefault: () => 0 });
+        tEv.onKeyDown({ keyCode: 13, preventDefault: () => 0 });
     };
 
     let addSc = (x = s[0], p1 = ["\n"], o = p1.join("") + fName(x)) => {
